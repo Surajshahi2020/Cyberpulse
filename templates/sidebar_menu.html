@@ -1,0 +1,102 @@
+<!-- templates/sidebar_menu.html -->
+<ul class="nav flex-column py-3 px-3">
+  <!-- Dashboard -->
+  <li class="nav-item mb-2">
+    <a class="nav-link d-flex align-items-center text-white py-2 px-3 rounded {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+       href="{% url 'dashboard' %}">
+      <i class="fas fa-tachometer-alt nav-icon fa-lg"></i>
+      <span class="sidebar-text ms-3">Dashboard</span>
+    </a>
+  </li>
+
+  <!-- News Feed -->
+  <li class="nav-item mb-2">
+    <a class="nav-link d-flex align-items-center text-white py-2 px-3 rounded" 
+     href="{% url 'news_feed' %}">
+      <i class="fas fa-newspaper nav-icon fa-lg"></i>
+      <span class="sidebar-text ms-3">News Feed</span>
+    </a>
+  </li>
+
+  <!-- 📌 Threat Alerts (with Submenu) -->
+  <li class="nav-item mb-2">
+    <a class="nav-link d-flex align-items-center text-white py-2 px-3 rounded collapsed"
+       data-bs-toggle="collapse" href="#threatSubmenu" role="button"
+       aria-expanded="false" aria-controls="threatSubmenu">
+      <i class="fas fa-exclamation-triangle nav-icon fa-lg"></i>
+      <span class="sidebar-text ms-3">Threat Alerts</span>
+      <i class="fas fa-chevron-right ms-auto sidebar-toggle-icon"></i>
+    </a>
+    <div class="collapse" id="threatSubmenu">
+      <ul class="nav flex-column ms-4 mt-2">
+        <li class="nav-item">
+          <a class="nav-link text-white py-1 px-2 rounded {% if request.get_full_path == '/alerts/active/' %}active{% endif %}" href="#">
+            <span class="sidebar-text">Active Threats</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white py-1 px-2 rounded {% if request.get_full_path == '/alerts/resolved/' %}active{% endif %}" href="#">
+            <span class="sidebar-text">Resolved</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white py-1 px-2 rounded {% if request.get_full_path == '/alerts/pending/' %}active{% endif %}" href="#">
+            <span class="sidebar-text">Pending Review</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white py-1 px-2 rounded" href="#">
+            <span class="sidebar-text">Threat Sources</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </li>
+
+  <!-- Analysts (Role-based) -->
+  {% if user.role >= 1 %}
+  <li class="nav-item mb-2">
+    <a class="nav-link d-flex align-items-center text-white py-2 px-3 rounded" href="#">
+      <i class="fas fa-users nav-icon fa-lg"></i>
+      <span class="sidebar-text ms-3">Analysts</span>
+    </a>
+  </li>
+  {% endif %}
+
+  <!-- Audit Logs (Admin only) -->
+  {% if user.role == 2 %}
+  <li class="nav-item mb-2">
+    <a class="nav-link d-flex align-items-center text-white py-2 px-3 rounded" href="#">
+      <i class="fas fa-shield-alt nav-icon fa-lg"></i>
+      <span class="sidebar-text ms-3">Audit Logs</span>
+    </a>
+  </li>
+  {% endif %}
+</ul>
+
+<!-- ✅ Submenu Toggle Icon Rotation -->
+<style>
+  .sidebar-toggle-icon {
+    transition: transform 0.2s ease;
+    font-size: 0.75rem;
+  }
+  .collapsed .sidebar-toggle-icon {
+    transform: rotate(-90deg);
+  }
+</style>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Auto-expand submenu if child is active
+    const activeSubItem = document.querySelector('.nav-link.active');
+    if (activeSubItem && activeSubItem.closest('.collapse')) {
+      const parentCollapse = activeSubItem.closest('.collapse');
+      const parentToggle = document.querySelector(`[href="#${parentCollapse.id}"]`);
+      if (parentToggle) {
+        parentToggle.classList.remove('collapsed');
+        parentCollapse.classList.add('show');
+      }
+    }
+  });
+</script>
