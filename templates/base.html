@@ -47,7 +47,7 @@
     /* ✅ SCROLLABLE CONTENT AREA */
     .main-content {
       margin-left: var(--sidebar-width);
-      margin-top: 60px;
+      margin-top: 48px;
       padding: 20px;
       padding-bottom: calc(var(--footer-height) + 20px); /* Space for fixed footer */
       transition: margin-left 0.3s;
@@ -60,18 +60,19 @@
     }
 
     /* ✅ FIXED FOOTER */
-    .fixed-footer {
-      position: fixed;
-      bottom: 0;
-      left: var(--sidebar-width);
-      right: 0;
-      height: var(--footer-height);
-      background: #222;
-      color: #ccc;
-      z-index: 1040; /* Below navbar (1050), above content */
-      padding: 0 20px;
-      transition: left 0.3s;
+   .fixed-footer {
+        position: fixed;
+        bottom: 0;
+        left: var(--sidebar-width);
+        right: 0;
+        height: 70px; /* Reduced from your original var(--footer-height) */
+        background: #222;
+        color: #ccc;
+        z-index: 1040;
+        padding: 0 20px;
+        transition: left 0.3s;
     }
+
     .main-sidebar.collapsed ~ .fixed-footer {
       left: 70px;
     }
