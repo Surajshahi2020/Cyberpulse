@@ -1,9 +1,13 @@
-# collect/models.py
 from django.db import models
+from django.utils import timezone
+import datetime
 
 class ThreatAlert(models.Model):
     # 🔹 Define choices inside the model
     CATEGORY_CHOICES = [
+        ('Genz', 'Genz'),
+        ('People', 'People'),
+        ('Protest', 'Protest'),
         ('Disinformation', 'Disinformation / Fake News'),
         ('Military', 'Military'),
         ('Police', 'Police'),
@@ -30,7 +34,7 @@ class ThreatAlert(models.Model):
     content = models.TextField()
     category = models.CharField(
         max_length=50,
-        choices=CATEGORY_CHOICES,      # 👈 refers to inner class attr
+        choices=CATEGORY_CHOICES,
         default='Other'
     )
     source = models.CharField(max_length=50, default='unknown')
@@ -44,3 +48,4 @@ class ThreatAlert(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.title}"
+    

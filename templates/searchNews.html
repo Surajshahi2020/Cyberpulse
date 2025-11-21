@@ -43,10 +43,12 @@
         <thead class="table-light">
           <tr>
             <th style="width: 5%;">ID</th>
-            <th style="width: 15%;">Title</th>
+            <th style="width: 10%;">Title</th>
             <th style="width: 20%;">Category</th>
             <th style="width: 30%;">Content</th>
-            <th style="width: 15%;">Source</th>
+            <th style="width: 5%;">Source</th>
+            <th style="width: 10%;">URL</th>
+            <th style="width: 5%;">Uploaded</th>
             <th style="width: 15%;">Image</th>
           </tr>
         </thead>
@@ -89,7 +91,33 @@
                 {{ threat.source|truncatechars:20 }}
               </div>
             </td>
-            
+
+            <!-- URL Column -->
+            <td>
+              {% if threat.url %}
+                <a href="{{ threat.url }}" target="_blank" rel="noopener noreferrer" class="text-primary">
+                  <div class="expandable-cell" 
+                       data-full="{{ threat.url }}" 
+                       data-truncated="{{ threat.url|truncatechars:30 }}">
+                    <i class="fas fa-external-link-alt me-1"></i>
+                    {{ threat.url|truncatechars:30 }}
+                  </div>
+                </a>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+
+           {% load tz %}
+
+            <!-- Source -->
+            <td>
+              <div class="expandable-cell" 
+                  data-full="{{ threat.timestamp|timezone:'Asia/Kathmandu' }}" 
+                  data-truncated="{{ threat.timestamp|timezone:'Asia/Kathmandu'|truncatechars:20 }}">
+                {{ threat.timestamp|timezone:'Asia/Kathmandu'|truncatechars:20 }}
+              </div>
+            </td>
             <!-- Image -->
             <td class="text-center">
               {% if threat.image %}
