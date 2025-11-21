@@ -1,0 +1,112 @@
+<!-- templates/time_report.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card border-0 mb-4">
+    <div class="card-body">
+        <h1 class="card-title h4 mb-3">Time Interval Report Generator</h1>
+        <p class="text-muted mb-4">Enter start and end datetime to generate your report</p>
+        
+        <form id="timeForm" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="startDatetime" class="form-label">Start Date & Time</label>
+                <input type="datetime-local" class="form-control" id="startDatetime" name="startDatetime" required>
+            </div>
+            
+            <div class="col-md-2 text-center">
+                <span class="text-muted fw-bold">to</span>
+            </div>
+            
+            <div class="col-md-5">
+                <label for="endDatetime" class="form-label">End Date & Time</label>
+                <input type="datetime-local" class="form-control" id="endDatetime" name="endDatetime" required>
+            </div>
+            
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-chart-bar me-2"></i>Generate Report
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.time-interval {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1em;
+    border-left: 4px solid #0d6efd;
+}
+
+/* Smooth transitions */
+.card {
+    transition: all 0.3s ease-in-out;
+}
+
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const timeForm = document.getElementById('timeForm');
+    
+    // Set default values to current time and one hour ahead
+    const now = new Date();
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    
+    const formatForInput = (date) => {
+        return date.toISOString().slice(0, 16);
+    };
+    
+    document.getElementById('startDatetime').value = formatForInput(now);
+    document.getElementById('endDatetime').value = formatForInput(oneHourLater);
+    
+    // Form submission handler
+    timeForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const startDatetime = document.getElementById('startDatetime').value;
+        const endDatetime = document.getElementById('endDatetime').value;
+        
+        if (!startDatetime || !endDatetime) {
+            alert('Please enter both start and end date/time');
+            return;
+        }
+        
+        // Format the datetime for display (YYYY-MM-DD HH:MM:SS)
+        const formatDatetime = (datetimeStr) => {
+            const datetime = new Date(datetimeStr);
+            const year = datetime.getFullYear();
+            const month = String(datetime.getMonth() + 1).padStart(2, '0');
+            const day = String(datetime.getDate()).padStart(2, '0');
+            const hours = String(datetime.getHours()).padStart(2, '0');
+            const minutes = String(datetime.getMinutes()).padStart(2, '0');
+            const seconds = String(datetime.getSeconds()).padStart(2, '0');
+            
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
+        
+        const formattedStart = formatDatetime(startDatetime);
+        const formattedEnd = formatDatetime(endDatetime);
+        
+        // Calculate duration
+        const start = new Date(startDatetime);
+        const end = new Date(endDatetime);
+        const durationMs = end - start;
+        const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
+        const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+        const totalMinutes = Math.floor(durationMs / (1000 * 60));
+        
+        console.log(`Time interval: ${formattedStart} to ${formattedEnd}`);
+        console.log(`Duration: ${durationHours} hours, ${durationMinutes} minutes`);
+        console.log(`Total minutes: ${totalMinutes}`);
+        
+        // Here you would typically send the data to your Django backend
+        // For now, we'll just log it to the console
+        alert(`Report generated for:\n${formattedStart} to ${formattedEnd}\nDuration: ${durationHours}h ${durationMinutes}m`);
+    });
+});
+</script>
+{% endblock %}

@@ -13,6 +13,10 @@ from datetime import datetime, timedelta
 from django.db.models import Count
 import json
 from django.db.models.functions import TruncDate
+from django.http import HttpResponse
+from django.core.files.storage import FileSystemStorage
+import os
+
 
 def dashboard(request):
     user = request.user
@@ -56,8 +60,10 @@ def newsfeeding(request):
         description = request.POST.get('description', '').strip()
         url = request.POST.get('url', '').strip()
         severity = request.POST.get('severity', 'medium').lower()
-        image = request.FILES.get('image')  # 🔸 Get uploaded image
+        image = request.FILES.get('image')
+        video = request.FILES.get('video')
 
+        # Validation
         if not title or not description:
             return render(request, 'news_add.html', {
                 'alert_type': 'error',
@@ -65,27 +71,65 @@ def newsfeeding(request):
                 'form_data': request.POST
             })
 
-        severity = severity if severity in ['low', 'medium', 'high'] else 'medium'
+        # Validate severity
+        valid_severities = ['low', 'medium', 'high', 'critical']
+        severity = severity if severity in valid_severities else 'medium'
 
+        # Validate URL
         if not url:
             url = "https://example.com/placeholder"
 
+        # File validation
+        errors = []
+        
+        if image:
+            # Validate image size (10MB max)
+            if image.size > 10 * 1024 * 1024:
+                errors.append("Image size must be less than 10MB")
+            
+            # Validate image extension
+            valid_image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+            ext = os.path.splitext(image.name)[1].lower()
+            if ext not in valid_image_extensions:
+                errors.append("Invalid image format. Supported: JPG, JPEG, PNG, GIF")
+
+        if video:
+            # Validate video size (100MB max)
+            if video.size > 100 * 1024 * 1024:
+                errors.append("Video size must be less than 100MB")
+            
+            # Validate video extension
+            valid_video_extensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+            ext = os.path.splitext(video.name)[1].lower()
+            if ext not in valid_video_extensions:
+                errors.append("Invalid video format. Supported: MP4, MOV, AVI, WebM, MKV")
+
+        # if image and video:
+        #     errors.append("Please upload either an image OR a video, not both.")
+
+        if errors:
+            return render(request, 'news_add.html', {
+                'alert_type': 'error',
+                'alert_message': ' | '.join(errors),
+                'form_data': request.POST
+            })
+
         try:
-            # 🔸 Create with image (can be None if not provided — but your form marks it required)
-            ThreatAlert.objects.create(
+            # Create threat alert
+            threat_alert = ThreatAlert.objects.create(
                 title=title,
                 content=description,
                 source=source,
-                category = category,
+                category=category,
                 url=url,
                 severity=severity,
-                image=image  # 🔸 Save image
+                image=image,
+                video=video
             )
 
             return render(request, 'news_add.html', {
                 'alert_type': 'success',
-                'alert_message': '✅ Threat report saved successfully!',
-                # Optional: clear form by NOT sending form_data
+                'alert_message': f'✅ Threat report #{threat_alert.id} saved successfully!',
             })
 
         except Exception as e:
@@ -97,6 +141,7 @@ def newsfeeding(request):
 
     # GET request
     return render(request, 'news_add.html')
+
 
 def newsSearching(request):
     selected = request.GET.getlist('category')
@@ -239,26 +284,36 @@ def newsVisualization(request):
 
 
 def newsTrending(request):
-    # Get high severity threats with all related data
-    high_threats = ThreatAlert.objects.filter(severity='high').order_by('-timestamp')
+    # Get critical threats with videos
+    critical_threats_with_videos = ThreatAlert.objects.filter(
+        severity='critical'
+    ).exclude(
+        video__isnull=True
+    ).exclude(
+        video=''
+    ).order_by('-timestamp')
     
-    # Get recent medium threats
-    medium_threats = ThreatAlert.objects.filter(severity='medium').order_by('-timestamp')[:5]
+    # Get all threats with videos for statistics
+    all_threats_with_videos = ThreatAlert.objects.exclude(
+        video__isnull=True
+    ).exclude(
+        video=''
+    )
     
-    # Combine both for the template
-    all_critical_threats = list(high_threats) + list(medium_threats)
-    
-    # Add pagination
-    paginator = Paginator(all_critical_threats, 3)  # Show 12 threats per page
+    # Add pagination for critical threats with videos
+    paginator = Paginator(critical_threats_with_videos, 3)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     return render(request, 'newsTrending.html', {
-        'threats': page_obj,  # Use paginated threats
-        'high_threats': high_threats,
-        'medium_threats': medium_threats,
-        'total_high': high_threats.count(),
-        'total_medium': medium_threats.count(),
-        'total_threats': len(all_critical_threats),
-        'page_obj': page_obj,  # For pagination controls
+        'threats': page_obj,
+        'critical_threats': critical_threats_with_videos,
+        'total_critical_with_videos': critical_threats_with_videos.count(),
+        'total_all_videos': all_threats_with_videos.count(),
+        'page_obj': page_obj,
+    })
+
+
+def newsReport(request):
+    return render(request, 'news_report.html', {
     })

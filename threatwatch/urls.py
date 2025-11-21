@@ -11,8 +11,7 @@ urlpatterns = [
     path('search_news/', views.newsSearching, name='news_search'),
     path('visualize_news/', views.newsVisualization, name='news_visualization'),
     path('trending_news/', views.newsTrending, name='news_trending'),
-
-
+    path('report_news/', views.newsReport, name='news_report'),
 ]
 
 # Serve media files during development

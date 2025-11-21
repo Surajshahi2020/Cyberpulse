@@ -1,1089 +1,352 @@
-<!-- templates/dashboard.html -->
+<!-- templates/newsTrending.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid py-3">
-  <!-- Your existing stats cards and charts here -->
-
-  <!-- 🚨 SECURITY OPERATIONS CENTER -->
-  <div class="row">
-    <div class="col-12">
-      <div class="soc-dashboard">
-        <!-- Compact SOC Header with Search -->
-        <div class="soc-header">
-          <div class="soc-header-content">
-            <div class="soc-title-section">
-              <div class="soc-status-indicator">
-                <div class="status-pulse active"></div>
-                <span class="status-text">LIVE</span>
-              </div>
-              <div>
-                <h2 class="soc-main-title">
-                  <i class="fas fa-shield-alt me-2"></i>
-                  Threat Intelligence
-                </h2>
-                <p class="soc-subtitle">Active security monitoring</p>
-              </div>
-            </div>
-            <div class="soc-controls">
-              <!-- Search Field -->
-              <div class="search-container">
-                <div class="search-box">
-                  <i class="fas fa-search search-icon"></i>
-                  <input 
-                    type="text" 
-                    class="search-input" 
-                    placeholder="Search threats..." 
-                    id="threat-search"
-                  >
-                  <button class="search-clear" id="search-clear">
-                    <i class="fas fa-times"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="control-group">
-                <button class="soc-control-btn primary" id="toggle-view">
-                  <i class="fas fa-th-large"></i>
-                  View
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Threat Count and Pagination Info -->
-        <div class="soc-info-bar">
-          <div class="threat-count">
-            <span class="count-badge">{{ total_threats }}</span>
-            <span class="count-text">Total Threats</span>
-          </div>
-          <div class="search-results-info" id="search-results" style="display: none;">
-            <span class="results-count" id="results-count">0</span>
-            <span class="results-text">results found</span>
-          </div>
-          <div class="pagination-info">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-          </div>
-        </div>
-
-        <!-- Compact Threat Grid -->
-        <div class="threat-intel-container">
-          <div class="threat-grid" id="grid-view">
-            {% for threat in threats %}
-              <div class="threat-item" data-searchable="{{ threat.title|lower }} {{ threat.content|lower }} {{ threat.get_category_display|lower }} {{ threat.source|lower }}">
-                <div class="threat-card" data-severity="{{ threat.severity }}">
-                  <!-- Alert Indicator -->
-                  <div class="alert-indicator"></div>
-                  
-                  <!-- Compact Card Content -->
-                  <div class="threat-card-content">
-                    <!-- Compact Header -->
-                    <div class="threat-header">
-                      <div class="threat-visual">
-                        {% if threat.image %}
-                          <img src="{{ threat.image.url }}" alt="Threat" class="threat-img">
-                          <div class="threat-overlay"></div>
-                        {% else %}
-                          <div class="threat-placeholder" data-severity="{{ threat.severity }}">
-                            {% if threat.severity == 'high' %}
-                              <i class="fas fa-radiation"></i>
-                            {% elif threat.severity == 'medium' %}
-                              <i class="fas fa-exclamation-triangle"></i>
-                            {% else %}
-                              <i class="fas fa-shield-virus"></i>
-                            {% endif %}
-                          </div>
-                        {% endif %}
-                        
-                        <!-- Compact Severity Badge -->
-                        <div class="severity-indicator">
-                          {% if threat.severity == 'high' %}
-                            <span class="severity-badge critical">
-                              <i class="fas fa-bolt"></i>
-                              Critical
-                            </span>
-                          {% elif threat.severity == 'medium' %}
-                            <span class="severity-badge warning">
-                              <i class="fas fa-exclamation"></i>
-                              Warning
-                            </span>
-                          {% else %}
-                            <span class="severity-badge info">
-                              <i class="fas fa-info"></i>
-                              Monitor
-                            </span>
-                          {% endif %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 bg-gradient-primary text-white">
+                <div class="card-body py-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="h3 mb-2">
+                                <i class="fas fa-video me-2"></i>Critical Video Threats
+                            </h1>
+                            <p class="mb-0 opacity-75">
+                                Monitoring critical security threats with video evidence
+                            </p>
                         </div>
-                      </div>
-                    </div>
-
-                    <!-- Compact Body -->
-                    <div class="threat-body">
-                      <!-- Title with hover tooltip for full text -->
-                      <h5 class="threat-title" data-full-title="{{ threat.title }}">
-                        {{ threat.title|truncatechars:60 }}
-                      </h5>
-
-                      <!-- Compact Metadata -->
-                      <div class="threat-meta">
-                        <div class="meta-tags">
-                          <span class="meta-tag category">
-                            <i class="fas fa-tag"></i>
-                            {{ threat.get_category_display }}
-                          </span>
-                          {% if threat.source %}
-                          <span class="meta-tag source">
-                            <i class="fas fa-globe"></i>
-                            {{ threat.source }}
-                          </span>
-                          {% endif %}
-                        </div>
-
-                        <!-- Description with hover expansion -->
-                        <!-- <div class="description-container">
-                          <p class="threat-desc" data-full-content="{{ threat.content }}">
-                            {{ threat.content|truncatewords:15 }}
-                          </p>
-                          <div class="expand-indicator">
-                            <i class="fas fa-chevron-down"></i>
-                          </div>
-                        </div> -->
-
-                        <!-- Compact Analytics -->
-                        <div class="threat-analytics">
-                          <div class="analytics-grid">
-                            <div class="analytic-item">
-                              <i class="fas fa-clock analytic-icon"></i>
-                              <span class="analytic-value">{{ threat.timestamp|timesince }}</span>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
+                                <span class="badge bg-light text-dark fs-6">
+                                    <i class="fas fa-play-circle me-1"></i>
+                                    {{ total_critical_with_videos }} Critical Videos
+                                </span>
+                                <span class="badge bg-warning text-dark fs-6">
+                                    <i class="fas fa-video me-1"></i>
+                                    {{ total_all_videos }} Total Videos
+                                </span>
                             </div>
-                            <div class="analytic-item">
-                              <i class="fas fa-chart-line analytic-icon"></i>
-                              <span class="analytic-value">
-                                {% if threat.severity == 'high' %}98%
-                                {% elif threat.severity == 'medium' %}75%
-                                {% else %}50%{% endif %}
-                              </span>
-                            </div>
-                          </div>
                         </div>
-                      </div>
                     </div>
-
-                    <!-- Compact Actions -->
-                    <div class="threat-actions">
-                      <a href="{{ threat.url }}" target="_blank" class="soc-action-btn primary">
-                        <i class="fas fa-search"></i>
-                        Investigate
-                      </a>
-                      <button class="soc-action-btn secondary" onclick="analyzeThreat({ threat })">
-                        <i class="fas fa-brain"></i>
-                        Analyze
-                      </button>
-                    </div>
-                  </div>
                 </div>
-              </div>
-            {% empty %}
-              <!-- Compact Secure State -->
-              <div class="soc-secure-state">
-                <div class="secure-visual">
-                  <i class="fas fa-shield-check"></i>
-                </div>
-                <div class="secure-content">
-                  <h4>All Systems Secure</h4>
-                  <p>No active threats detected</p>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-
-        <!-- Pagination Controls -->
-        {% if threats.has_other_pages %}
-        <div class="pagination-container">
-          <nav class="soc-pagination">
-            {% if threats.has_previous %}
-              <a href="?page=1" class="pagination-btn first">
-                <i class="fas fa-angle-double-left"></i>
-              </a>
-              <a href="?page={{ threats.previous_page_number }}" class="pagination-btn prev">
-                <i class="fas fa-angle-left"></i>
-              </a>
-            {% endif %}
-
-            <div class="pagination-pages">
-              {% for num in threats.paginator.page_range %}
-                {% if threats.number == num %}
-                  <span class="pagination-btn active">{{ num }}</span>
-                {% elif num > threats.number|add:'-3' and num < threats.number|add:'3' %}
-                  <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
-                {% endif %}
-              {% endfor %}
             </div>
-
-            {% if threats.has_next %}
-              <a href="?page={{ threats.next_page_number }}" class="pagination-btn next">
-                <i class="fas fa-angle-right"></i>
-              </a>
-              <a href="?page={{ threats.paginator.num_pages }}" class="pagination-btn last">
-                <i class="fas fa-angle-double-right"></i>
-              </a>
-            {% endif %}
-          </nav>
         </div>
-        {% endif %}
-      </div>
     </div>
-  </div>
+
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form method="get" class="row g-3 align-items-center">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       name="search" 
+                                       class="form-control border-start-0" 
+                                       placeholder="Search video threats by title, content, category, or source..."
+                                       w-200
+                                       value="{{ search_query }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-1"></i> Search
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            {% if search_query %}
+                            <a href="{% url 'newsTrending' %}" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-times me-1"></i> Clear
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Threats Grid -->
+    <div class="row">
+        {% for threat in threats %}
+        <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
+            <div class="card threat-video-card h-100 border-0 shadow-sm hover-shadow">
+                <!-- Video Thumbnail/Player -->
+                <div class="video-thumbnail-container">
+                    {% if threat.video %}
+                    <video class="video-thumbnail" controls preload="metadata">
+                        <source src="{{ threat.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-overlay">
+                        <div class="video-badge video-indicator">
+                            <i class="fas fa-play-circle me-1"></i> Video
+                        </div>
+                        <div class="video-badge severity-badge severity-{{ threat.severity }}">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            {{ threat.get_severity_display }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <!-- Title -->
+                    <h6 class="card-title fw-bold text-truncate" title="{{ threat.title }}">
+                        {{ threat.title }}
+                    </h6>
+
+                    <!-- Content Preview -->
+                    <p class="card-text text-muted small mb-2 line-clamp-2">
+                        {{ threat.content|truncatewords:25 }}
+                    </p>
+
+                    <!-- Metadata -->
+                    <div class="threat-meta">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-tag me-1"></i>
+                                {{ threat.get_category_display }}
+                            </span>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ threat.timestamp|timesince }} ago
+                            </small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-source me-1"></i>
+                                {{ threat.source }}
+                            </span>
+                            <a href="{{ threat.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer bg-transparent border-top-0 pt-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            ID: #{{ threat.id }}
+                        </small>
+                        <div class="video-actions">
+                          
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="downloadVideo('{{ threat.video.url }}')"
+                                    title="Download Video">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card border-0 text-center py-5">
+                <div class="card-body">
+                    <i class="fas fa-video-slash fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">
+                        {% if search_query %}
+                        No video threats found for "{{ search_query }}"
+                        {% else %}
+                        No critical video threats available
+                        {% endif %}
+                    </h4>
+                    <p class="text-muted mb-0">
+                        {% if search_query %}
+                        Try adjusting your search terms or clear the search filter.
+                        {% else %}
+                        Check back later for new video threat reports.
+                        {% endif %}
+                    </p>
+                    {% if search_query %}
+                    <a href="{% url 'newsTrending' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-times me-1"></i> Clear Search
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if threats.has_other_pages %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Video threats pagination">
+                <ul class="pagination justify-content-center">
+                    {% if threats.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ threats.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Page {{ threats.number }} of {{ threats.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if threats.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ threats.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ threats.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
+<!-- Custom CSS -->
 <style>
-/* Optimized SOC Theme */
-:root {
-  --soc-bg-dark: #0f1117;
-  --soc-bg-card: #1a1d29;
-  --soc-bg-header: #161b26;
-  --soc-primary: #3b82f6;
-  --soc-danger: #ef4444;
-  --soc-warning: #f59e0b;
-  --soc-success: #10b981;
-  --soc-text: #f8fafc;
-  --soc-text-muted: #94a3b8;
+.threat-video-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-/* Compact SOC Dashboard */
-.soc-dashboard {
-  background: var(--soc-bg-dark);
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.threat-video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
 }
 
-/* Info Bar */
-.soc-info-bar {
-  background: rgba(255, 255, 255, 0.02);
-  padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
+.video-thumbnail-container {
+    position: relative;
+    background: #000;
+    border-radius: 12px 12px 0 0;
+    overflow: hidden;
 }
 
-.threat-count {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.video-thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
 }
 
-.count-badge {
-  background: var(--soc-primary);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7));
+    pointer-events: none;
 }
 
-.count-text {
-  color: var(--soc-text-muted);
-  font-size: 0.8rem;
+.video-badge {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
 }
 
-.search-results-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--soc-primary);
-  font-size: 0.8rem;
-}
-
-.results-count {
-  background: var(--soc-primary);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.pagination-info {
-  color: var(--soc-text-muted);
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-/* Compact Header */
-.soc-header {
-  background: var(--soc-bg-header);
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.soc-header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.soc-title-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.soc-status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.status-pulse {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  animation: socPulse 2s infinite;
-}
-
-.status-pulse.active {
-  background: var(--soc-success);
-  box-shadow: 0 0 8px var(--soc-success);
-}
-
-.status-text {
-  color: var(--soc-success);
-  font-weight: 600;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-}
-
-.soc-main-title {
-  color: var(--soc-text);
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.soc-subtitle {
-  color: var(--soc-text-muted);
-  font-size: 0.875rem;
-  margin: 0.25rem 0 0 0;
-}
-
-/* Search Container */
-.search-container {
-  margin-right: 1rem;
-}
-
-.search-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  padding: 0.5rem;
-  transition: all 0.3s ease;
-  min-width: 280px;
-}
-
-.search-box:focus-within {
-  border-color: var(--soc-primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.search-icon {
-  color: var(--soc-text-muted);
-  margin-right: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.search-input {
-  background: transparent;
-  border: none;
-  color: var(--soc-text);
-  font-size: 0.85rem;
-  flex: 1;
-  outline: none;
-  padding: 0;
-}
-
-.search-input::placeholder {
-  color: var(--soc-text-muted);
-}
-
-.search-clear {
-  background: none;
-  border: none;
-  color: var(--soc-text-muted);
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 3px;
-  opacity: 0;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.search-clear:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--soc-text);
-}
-
-.search-input:not(:placeholder-shown) + .search-clear {
-  opacity: 1;
-}
-
-/* Compact Controls */
-.soc-controls {
-  display: flex;
-  align-items: center;
-}
-
-.control-group {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.soc-control-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--soc-text);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.soc-control-btn.primary {
-  background: var(--soc-primary);
-  border-color: var(--soc-primary);
-}
-
-.soc-control-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Search Highlight */
-.search-highlight {
-  background: rgba(59, 130, 246, 0.3);
-  padding: 0.1rem 0.2rem;
-  border-radius: 2px;
-  color: var(--soc-primary);
-  font-weight: 600;
-}
-
-/* Threat Item Search States */
-.threat-item {
-  transition: all 0.3s ease;
-}
-
-.threat-item.search-hidden {
-  display: none;
-}
-
-.threat-item.search-match {
-  border: 1px solid var(--soc-primary);
-  box-shadow: 0 0 0 1px var(--soc-primary);
-}
-
-/* Compact Threat Grid */
-.threat-intel-container {
-  padding: 1.5rem;
-}
-
-.threat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.25rem;
-}
-
-.threat-item {
-  perspective: 800px;
-}
-
-.threat-card {
-  background: var(--soc-bg-card);
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  height: 100%;
-}
-
-.threat-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--soc-primary);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-}
-
-.threat-card[data-severity="high"] {
-  border-left: 3px solid var(--soc-danger);
-}
-
-.threat-card[data-severity="medium"] {
-  border-left: 3px solid var(--soc-warning);
-}
-
-.threat-card[data-severity="low"] {
-  border-left: 3px solid var(--soc-success);
-}
-
-/* Alert Indicator */
-.alert-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--soc-danger);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.threat-card:hover .alert-indicator {
-  opacity: 1;
-}
-
-/* Compact Threat Visual */
-.threat-header {
-  position: relative;
-}
-
-.threat-visual {
-  height: 140px;
-  position: relative;
-  overflow: hidden;
-}
-
-.threat-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: contrast(1.1) saturate(1.05);
-  transition: transform 0.3s ease;
-}
-
-.threat-card:hover .threat-img {
-  transform: scale(1.03);
-}
-
-.threat-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
-}
-
-.threat-placeholder {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-  position: relative;
-}
-
-.threat-placeholder[data-severity="high"] {
-  background: linear-gradient(135deg, var(--soc-danger), #f87171);
-  color: white;
-}
-
-.threat-placeholder[data-severity="medium"] {
-  background: linear-gradient(135deg, var(--soc-warning), #fbbf24);
-  color: #333;
-}
-
-.threat-placeholder[data-severity="low"] {
-  background: linear-gradient(135deg, var(--soc-success), #34d399);
-  color: white;
-}
-
-/* Compact Severity Badge */
-.severity-indicator {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2;
+.video-indicator {
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .severity-badge {
-  padding: 0.35rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    top: 12px;
+    right: 12px;
 }
 
-.severity-badge.critical {
-  background: var(--soc-danger);
-  color: white;
+.severity-critical { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
+.severity-high { background: linear-gradient(135deg, #ff9ff3 0%, #f368e0 100%); }
+.severity-medium { background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%); }
+.severity-low { background: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%); }
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
-.severity-badge.warning {
-  background: var(--soc-warning);
-  color: #333;
+.threat-meta .badge {
+    font-size: 11px;
+    padding: 4px 8px;
 }
 
-.severity-badge.info {
-  background: var(--soc-success);
-  color: white;
+.video-actions .btn {
+    padding: 4px 8px;
+    border-radius: 6px;
 }
 
-/* Compact Body */
-.threat-body {
-  padding: 1.25rem;
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.threat-title {
-  color: var(--soc-text);
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.4;
-  margin-bottom: 0.75rem;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
-}
-
-.threat-title:hover::after {
-  content: attr(data-full-title);
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 0.75rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 400;
-  z-index: 1000;
-  white-space: normal;
-  line-height: 1.4;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.threat-meta {
-  margin-bottom: 1rem;
-}
-
-.meta-tags {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.meta-tag {
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.meta-tag.category {
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--soc-primary);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.meta-tag.source {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--soc-text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Description with Hover Expansion */
-.description-container {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.threat-desc {
-  color: var(--soc-text-muted);
-  font-size: 0.8rem;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.threat-card:hover .threat-desc {
-  overflow: visible;
-}
-
-.expand-indicator {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(90deg, transparent, var(--soc-bg-card) 50%);
-  padding-left: 2rem;
-  color: var(--soc-primary);
-  font-size: 0.7rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.threat-card:hover .expand-indicator {
-  opacity: 1;
-}
-
-/* Compact Analytics */
-.threat-analytics {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 6px;
-  padding: 0.75rem;
-}
-
-.analytics-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-}
-
-.analytic-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.analytic-icon {
-  color: var(--soc-primary);
-  font-size: 0.75rem;
-  width: 16px;
-  text-align: center;
-}
-
-.analytic-value {
-  color: var(--soc-text);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-/* Compact Actions */
-.threat-actions {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0 1.25rem 1.25rem;
-}
-
-.soc-action-btn {
-  flex: 1;
-  padding: 0.6rem 0.75rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  text-decoration: none;
-}
-
-.soc-action-btn.primary {
-  background: var(--soc-primary);
-  color: white;
-}
-
-.soc-action-btn.secondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--soc-text);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.soc-action-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Compact Secure State */
-.soc-secure-state {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 2.5rem 1.5rem;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.secure-visual {
-  margin-bottom: 1rem;
-}
-
-.secure-visual i {
-  font-size: 2.5rem;
-  color: var(--soc-success);
-}
-
-.secure-content h4 {
-  color: var(--soc-success);
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.secure-content p {
-  color: var(--soc-text-muted);
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-/* Pagination */
-.pagination-container {
-  padding: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.soc-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.pagination-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--soc-text);
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.5rem;
-}
-
-.pagination-btn:hover {
-  background: var(--soc-primary);
-  border-color: var(--soc-primary);
-  transform: translateY(-1px);
-}
-
-.pagination-btn.active {
-  background: var(--soc-primary);
-  border-color: var(--soc-primary);
-  color: white;
-}
-
-.pagination-pages {
-  display: flex;
-  gap: 0.25rem;
-}
-
-/* Animations */
-@keyframes socPulse {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.8;
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-  }
-  70% {
-    transform: scale(1.1);
-    opacity: 1;
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-  }
-  100% {
-    transform: scale(0.95);
-    opacity: 0.8;
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .threat-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .soc-header-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .soc-controls {
-    width: 100%;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .search-container {
-    margin-right: 0;
-    width: 100%;
-  }
-  
-  .search-box {
-    min-width: auto;
-    width: 100%;
-  }
-  
-  .control-group {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .soc-control-btn {
-    flex: 1;
-  }
-  
-  .threat-visual {
-    height: 120px;
-  }
-  
-  .soc-pagination {
-    flex-wrap: wrap;
-  }
-  
-  .soc-info-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .threat-intel-container {
-    padding: 1rem;
-  }
-  
-  .threat-grid {
-    gap: 1rem;
-  }
-  
-  .threat-body {
-    padding: 1rem;
-  }
-  
-  .threat-actions {
-    padding: 0 1rem 1rem;
-  }
+.hover-shadow {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 </style>
 
+<!-- JavaScript -->
 <script>
-function analyzeThreat(threatId) {
-  console.log('Analyzing threat:', threatId);
-  // Add your threat analysis logic here
+function shareThreat(threatId) {
+    const url = `${window.location.origin}/threat/${threatId}/`;
+    if (navigator.share) {
+        navigator.share({
+            title: 'Security Threat Alert',
+            url: url
+        });
+    } else {
+        navigator.clipboard.writeText(url);
+        alert('Threat URL copied to clipboard!');
+    }
 }
 
-// Search functionality
-document.addEventListener('DOMContentLoaded', function() {
-  const searchInput = document.getElementById('threat-search');
-  const searchClear = document.getElementById('search-clear');
-  const searchResults = document.getElementById('search-results');
-  const resultsCount = document.getElementById('results-count');
-  const threatItems = document.querySelectorAll('.threat-item');
-  
-  // Search function
-  function performSearch() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    let matchCount = 0;
-    
-    threatItems.forEach(item => {
-      const searchableText = item.getAttribute('data-searchable');
-      const isMatch = searchableText.includes(searchTerm);
-      
-      if (searchTerm && !isMatch) {
-        item.classList.add('search-hidden');
-      } else {
-        item.classList.remove('search-hidden');
-        if (searchTerm && isMatch) {
-          item.classList.add('search-match');
-          matchCount++;
-        } else {
-          item.classList.remove('search-match');
-        }
-      }
-    });
-    
-    // Update search results info
-    if (searchTerm) {
-      searchResults.style.display = 'flex';
-      resultsCount.textContent = matchCount;
-    } else {
-      searchResults.style.display = 'none';
-    }
-  }
-  
-  // Event listeners
-  searchInput.addEventListener('input', performSearch);
-  
-  searchClear.addEventListener('click', function() {
-    searchInput.value = '';
-    searchInput.focus();
-    performSearch();
-  });
-  
-  // Clear search on escape key
-  searchInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-      searchInput.value = '';
-      performSearch();
-    }
-  });
-});
+function downloadVideo(videoUrl) {
+    const link = document.createElement('a');
+    link.href = videoUrl;
+    link.download = 'threat-video.mp4';
+    link.click();
+}
 
-// Toggle view functionality
-document.getElementById('toggle-view')?.addEventListener('click', function() {
-  const gridView = document.getElementById('grid-view');
-  const button = this;
-  const icon = this.querySelector('i');
-  
-  if (gridView.classList.contains('compact-view')) {
-    gridView.classList.remove('compact-view');
-    gridView.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
-    icon.className = 'fas fa-th-large';
-    button.innerHTML = '<i class="fas fa-th-large"></i> Grid';
-  } else {
-    gridView.classList.add('compact-view');
-    gridView.style.gridTemplateColumns = '1fr';
-    icon.className = 'fas fa-list';
-    button.innerHTML = '<i class="fas fa-list"></i> List';
-  }
-});
-
-// Add click to expand functionality for descriptions
+// Auto-play video on hover (optional)
 document.addEventListener('DOMContentLoaded', function() {
-  const descriptions = document.querySelectorAll('.threat-desc');
-  
-  descriptions.forEach(desc => {
-    desc.addEventListener('click', function() {
-      this.style.webkitLineClamp = this.style.webkitLineClamp ? '' : 'unset';
+    const videos = document.querySelectorAll('.video-thumbnail');
+    videos.forEach(video => {
+        video.addEventListener('mouseenter', function() {
+            this.play();
+        });
+        video.addEventListener('mouseleave', function() {
+            this.pause();
+            this.currentTime = 0;
+        });
     });
-  });
 });
 </script>
 {% endblock %}

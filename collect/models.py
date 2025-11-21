@@ -6,10 +6,11 @@ class ThreatAlert(models.Model):
     # 🔹 Define choices inside the model
     CATEGORY_CHOICES = [
         ('Genz', 'Genz'),
+        ('PM', 'PM'),
         ('People', 'People'),
         ('Protest', 'Protest'),
         ('Disinformation', 'Disinformation / Fake News'),
-        ('Military', 'Military'),
+        ('Army', 'Army'),
         ('Police', 'Police'),
         ('APF', 'APF'),
         ('NationalCyberCrime', 'National CyberCrime'),
@@ -27,10 +28,13 @@ class ThreatAlert(models.Model):
         ('low', 'Low'),
         ('medium', 'Medium'),
         ('high', 'High'),
+         ('critical', 'Critical'), 
     ]
 
     title = models.CharField(max_length=300)
     image = models.ImageField(upload_to='threat_alerts/', blank=True, null=True)
+    video = models.FileField(upload_to='threat_alerts/videos/', blank=True, null=True, 
+                           help_text="Upload video files")
     content = models.TextField()
     category = models.CharField(
         max_length=50,
@@ -48,4 +52,16 @@ class ThreatAlert(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.title}"
+    
+    @property
+    def has_media(self):
+        return bool(self.image or self.video)
+
+    @property
+    def media_type(self):
+        if self.video:
+            return 'video'
+        elif self.image:
+            return 'image'
+        return 'none'
     
