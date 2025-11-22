@@ -12,6 +12,7 @@ urlpatterns = [
     path('visualize_news/', views.newsVisualization, name='news_visualization'),
     path('trending_news/', views.newsTrending, name='news_trending'),
     path('report_news/', views.newsReport, name='news_report'),
+    path('current_news/', views.newsCurrent, name='news_current'),
 ]
 
 # Serve media files during development

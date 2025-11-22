@@ -69,3 +69,60 @@ class ThreatAlert(models.Model):
             return 'image'
         return 'none'
     
+
+class CurrentInformation(models.Model):
+    timing = models.CharField(
+        max_length=255,
+        help_text="When the activity took place"
+    )
+
+    location = models.CharField(
+        max_length=255,
+        help_text="Where the activity took place"
+    )
+    leader = models.CharField(
+        max_length=255,
+        help_text="Name of the person in charge"
+    )
+    number = models.CharField(
+        max_length=50,
+        help_text="Contact number, ID, or team number",
+        blank=True,
+        null=True
+    )
+    vehicle = models.CharField(
+        max_length=100,
+        help_text="Type of vehicle used (e.g., Toyota Hilux, Motorcycle)",
+        blank=True,
+        null=True
+    )
+    description = models.TextField(
+        help_text="Details of the activity or event",
+        blank=True,
+        null=True
+    )
+
+    # Optional: Add timestamp for when record was created
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    # Optional: Add status field
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        ordering = ['-created_at']  # Show newest first
+
+    def __str__(self):
+        return f"{self.leader} at {self.location} on {self.timing}"

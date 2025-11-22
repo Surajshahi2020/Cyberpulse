@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from urllib.parse import quote
 from django.db.models import Q  # 🔸 You were using Q but didn't import it!
-from .models import ThreatAlert
+from .models import ThreatAlert, CurrentInformation
 from collections import Counter
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -317,3 +317,11 @@ def newsTrending(request):
 def newsReport(request):
     return render(request, 'news_report.html', {
     })
+
+
+def newsCurrent(request):
+    current_info_list = CurrentInformation.objects.all().order_by('-created_at')
+    paginator = Paginator(current_info_list, 7)  # 10 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'newsCurrent.html', {'page_obj': page_obj})

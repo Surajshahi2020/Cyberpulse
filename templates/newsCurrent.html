@@ -1,0 +1,208 @@
+<!-- templates/newsCurrent.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  /* ... (keep all your existing CSS unchanged) ... */
+  .brief-text {
+    cursor: pointer;
+    color: #64b5f6;
+    text-decoration: none;
+    border-bottom: 1px dotted #64b5f6;
+    transition: color 0.2s;
+  }
+  .brief-text:hover {
+    color: #90caf9;
+  }
+
+  .soc-container {
+    background-color: #121826;
+    color: #e0e6f0;
+    min-height: 100vh;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: inset 0 0 0 1px rgba(64, 120, 192, 0.1);
+  }
+
+  .soc-header {
+    border-bottom: 1px solid #2a3a5a;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+    color: #4fc3f7;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .table-soc {
+    background: rgba(18, 24, 38, 0.8);
+    border: 1px solid #2a3a5a;
+    color: #d0d8e8;
+  }
+
+  .table-soc thead th {
+    background: #1a2332;
+    color: #81d4fa;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
+
+  .table-soc tbody tr {
+    border-bottom: 1px solid #232d42;
+  }
+
+  .table-soc tbody tr:hover {
+    background: rgba(26, 35, 50, 0.6) !important;
+  }
+
+  .badge-pending { background-color: #ff9800; color: #000; font-weight: 600; }
+  .badge-completed { background-color: #4caf50; color: #fff; font-weight: 600; }
+  .badge-cancelled { background-color: #f44336; color: #fff; font-weight: 600; }
+
+  .pagination .page-link {
+    background: #1a2332;
+    border: 1px solid #394b66;
+    color: #81d4fa;
+  }
+  .pagination .page-item.active .page-link {
+    background: #2962ff;
+    color: white;
+  }
+
+  .empty-state { color: #6b7a99; font-style: italic; }
+
+  .modal-content {
+    background-color: #1a2332;
+    color: #e0e6f0;
+    border: 1px solid #2a3a5a;
+  }
+  .modal-header { border-bottom: 1px solid #2a3a5a; }
+  .modal-footer { border-top: 1px solid #2a3a5a; }
+  .btn-close { filter: invert(1) grayscale(1) brightness(2); }
+</style>
+
+<div class="container soc-container py-4">
+  <h2 class="soc-header">
+    <i class="fas fa-shield-alt me-2"></i>
+    CURRENT INTELLIGENCE FEED
+  </h2>
+
+  {% if page_obj %}
+    <div class="table-responsive">
+      <table class="table table-soc align-middle">
+        <thead>
+          <tr>
+            <th scope="col">SN</th> <!-- Added SN header -->
+            <th scope="col">TIMESTAMP</th>
+            <th scope="col">LOCATION</th>
+            <th scope="col">LEADER</th>
+            <th scope="col">Number of People</th>
+            <th scope="col">VEHICLE</th>
+            <th scope="col">STATUS</th>
+            <th scope="col">BRIEF</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in page_obj %}
+            {% with forloop.counter as sn %}
+          <tr>
+            <td>{{ sn }}</td> <!-- Serial number per page -->
+            <td>{{ item.timing }}</td>
+            <td>{{ item.location }}</td>
+            <td>{{ item.leader }}</td>
+            <td>{{ item.number|default:"—" }}</td>
+            <td>{{ item.vehicle|default:"—" }}</td>
+            <td>
+              {% if item.status == 'pending' %}
+                <span class="badge badge-pending px-2 py-1">PENDING</span>
+              {% elif item.status == 'completed' %}
+                <span class="badge badge-completed px-2 py-1">COMPLETED</span>
+              {% elif item.status == 'cancelled' %}
+                <span class="badge badge-cancelled px-2 py-1">CANCELLED</span>
+              {% else %}
+                <span class="badge bg-secondary px-2 py-1">UNKNOWN</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if item.description %}
+                <span class="brief-text" data-bs-toggle="modal" data-bs-target="#descModal{{ item.id }}">
+                  {{ item.description|truncatewords:15 }}
+                </span>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+
+          <!-- Modal for full description -->
+          <div class="modal fade" id="descModal{{ item.id }}" tabindex="-1" aria-labelledby="descModalLabel{{ item.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="descModalLabel{{ item.id }}">
+                    <i class="fas fa-file-alt me-2"></i>INTEL REPORT — {{ item.leader }}
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Location:</strong> {{ item.location }}</p>
+                  <p><strong>Time:</strong> {{ item.timing }}</p>
+                  <p><strong>Vehicle:</strong> {{ item.vehicle|default:"Not specified" }}</p>
+                  <hr class="my-3" style="border-color: #2a3a5a;">
+                  <h6>Full Description:</h6>
+                  <p style="white-space: pre-wrap; line-height: 1.5;">{{ item.description }}</p>
+                </div>
+                <div class="modal-footer">
+                  <small class="text-muted">Report ID: {{ item.id }} | Created: {{ item.created_at|date:"Y-m-d H:i" }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endwith %}
+          {% empty %}
+          <tr>
+            <td colspan="8" class="text-center empty-state py-4"> <!-- Updated colspan to 8 -->
+              📡 NO ACTIVE INTELLIGENCE — STAND BY
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Intel Feed Navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1">&laquo; FIRST</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">PREV</a>
+          </li>
+        {% endif %}
+        <li class="page-item disabled">
+          <span class="page-link">PAGE {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">NEXT</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">LAST &raquo;</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+  {% else %}
+    <div class="text-center mt-5 empty-state">
+      <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+      <p>NO INTELLIGENCE FEED AVAILABLE</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
