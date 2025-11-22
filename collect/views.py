@@ -412,3 +412,7 @@ def newsSpy(request):
     return render(request, 'newsSpy.html', {
         'page_obj': page_obj,
     })
+
+def loginPage(request):
+    return render(request, 'login.html', {
+    })

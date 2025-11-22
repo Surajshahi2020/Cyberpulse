@@ -3,83 +3,224 @@
 
 {% block content %}
 <style>
-  /* ... (keep all your existing CSS unchanged) ... */
+  /* Enhanced Color Scheme */
   .brief-text {
     cursor: pointer;
-    color: #64b5f6;
+    color: #4dabf7;
     text-decoration: none;
-    border-bottom: 1px dotted #64b5f6;
-    transition: color 0.2s;
+    border-bottom: 1px dotted #4dabf7;
+    transition: all 0.2s ease;
   }
   .brief-text:hover {
-    color: #90caf9;
+    color: #74c0fc;
+    background-color: rgba(116, 192, 252, 0.1);
+    border-radius: 3px;
+    padding: 2px 4px;
+    margin: -2px -4px;
   }
 
   .soc-container {
-    background-color: #121826;
-    color: #e0e6f0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #e2e8f0;
     min-height: 100vh;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: inset 0 0 0 1px rgba(64, 120, 192, 0.1);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 1px rgba(100, 116, 139, 0.2);
   }
 
   .soc-header {
-    border-bottom: 1px solid #2a3a5a;
-    padding-bottom: 12px;
-    margin-bottom: 24px;
-    color: #4fc3f7;
-    font-weight: 600;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 16px;
+    margin-bottom: 28px;
+    color: #60a5fa;
+    font-weight: 700;
     letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  
+  .soc-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #60a5fa, transparent);
+    border-radius: 3px;
   }
 
   .table-soc {
-    background: rgba(18, 24, 38, 0.8);
-    border: 1px solid #2a3a5a;
-    color: #d0d8e8;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
   }
 
   .table-soc thead th {
-    background: #1a2332;
-    color: #81d4fa;
+    background: linear-gradient(to bottom, #1e293b, #1e293b);
+    color: #93c5fd;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 1px;
+    border-bottom: 2px solid #475569;
+    padding: 14px 12px;
   }
 
   .table-soc tbody tr {
-    border-bottom: 1px solid #232d42;
+    border-bottom: 1px solid #334155;
+    transition: all 0.2s ease;
+  }
+
+  .table-soc tbody tr:nth-child(even) {
+    background-color: rgba(30, 41, 59, 0.4);
   }
 
   .table-soc tbody tr:hover {
-    background: rgba(26, 35, 50, 0.6) !important;
+    background: rgba(56, 86, 138, 0.2) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   }
 
-  .badge-pending { background-color: #ff9800; color: #000; font-weight: 600; }
-  .badge-completed { background-color: #4caf50; color: #fff; font-weight: 600; }
-  .badge-cancelled { background-color: #f44336; color: #fff; font-weight: 600; }
+  .table-soc tbody td {
+    padding: 14px 12px;
+    vertical-align: middle;
+    border-color: #334155;
+  }
 
+  /* Enhanced Badges */
+  .badge-pending { 
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #1e293b; 
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(245, 158, 11, 0.3);
+  }
+  .badge-completed { 
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff; 
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);
+  }
+  .badge-cancelled { 
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff; 
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+  }
+  
+  .badge {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+  }
+
+  /* Enhanced Pagination */
   .pagination .page-link {
-    background: #1a2332;
-    border: 1px solid #394b66;
-    color: #81d4fa;
+    background: #1e293b;
+    border: 1px solid #475569;
+    color: #93c5fd;
+    transition: all 0.2s ease;
+    margin: 0 2px;
+    border-radius: 6px;
   }
+  
+  .pagination .page-link:hover {
+    background: #334155;
+    border-color: #60a5fa;
+    color: #bfdbfe;
+  }
+  
   .pagination .page-item.active .page-link {
-    background: #2962ff;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border-color: #3b82f6;
     color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  }
+  
+  .pagination .page-item.disabled .page-link {
+    background: #1e293b;
+    color: #64748b;
+    border-color: #475569;
   }
 
-  .empty-state { color: #6b7a99; font-style: italic; }
+  .empty-state { 
+    color: #94a3b8; 
+    font-style: italic;
+    padding: 40px 20px;
+  }
 
+  /* Enhanced Modal */
   .modal-content {
-    background-color: #1a2332;
-    color: #e0e6f0;
-    border: 1px solid #2a3a5a;
+    background: linear-gradient(135deg, #1e293b 0%, #1e293b 100%);
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
   }
-  .modal-header { border-bottom: 1px solid #2a3a5a; }
-  .modal-footer { border-top: 1px solid #2a3a5a; }
-  .btn-close { filter: invert(1) grayscale(1) brightness(2); }
+  
+  .modal-header { 
+    border-bottom: 1px solid #475569;
+    padding: 20px 24px 16px;
+  }
+  
+  .modal-title {
+    color: #93c5fd;
+    font-weight: 600;
+  }
+  
+  .modal-body {
+    padding: 24px;
+  }
+  
+  .modal-body p {
+    margin-bottom: 12px;
+  }
+  
+  .modal-body hr {
+    border-color: #475569;
+    opacity: 0.7;
+  }
+  
+  .modal-footer { 
+    border-top: 1px solid #475569;
+    padding: 16px 24px 20px;
+  }
+  
+  .btn-close { 
+    filter: invert(1) grayscale(1) brightness(2);
+    opacity: 0.7;
+  }
+  
+  .btn-close:hover {
+    opacity: 1;
+  }
+  
+  /* Additional enhancements */
+  .table-responsive {
+    border-radius: 8px;
+  }
+  
+  .container {
+    max-width: 1400px;
+  }
+  
+  /* Status-specific row highlights */
+  tr[data-status="pending"] {
+    border-left: 3px solid #f59e0b;
+  }
+  
+  tr[data-status="completed"] {
+    border-left: 3px solid #10b981;
+  }
+  
+  tr[data-status="cancelled"] {
+    border-left: 3px solid #ef4444;
+  }
 </style>
 
 <div class="container soc-container py-4">
@@ -93,7 +234,7 @@
       <table class="table table-soc align-middle">
         <thead>
           <tr>
-            <th scope="col">SN</th> <!-- Added SN header -->
+            <th scope="col">SN</th>
             <th scope="col">TIMESTAMP</th>
             <th scope="col">LOCATION</th>
             <th scope="col">LEADER</th>
@@ -106,8 +247,8 @@
         <tbody>
           {% for item in page_obj %}
             {% with forloop.counter as sn %}
-          <tr>
-            <td>{{ sn }}</td> <!-- Serial number per page -->
+          <tr data-status="{{ item.status }}">
+            <td>{{ sn }}</td>
             <td>{{ item.timing }}</td>
             <td>{{ item.location }}</td>
             <td>{{ item.leader }}</td>
@@ -149,12 +290,12 @@
                   <p><strong>Location:</strong> {{ item.location }}</p>
                   <p><strong>Time:</strong> {{ item.timing }}</p>
                   <p><strong>Vehicle:</strong> {{ item.vehicle|default:"Not specified" }}</p>
-                  <hr class="my-3" style="border-color: #2a3a5a;">
-                  <h6>Full Description:</h6>
+                  <hr class="my-3">
+                  <h6 class="text-sky-300">Full Description:</h6>
                   <p style="white-space: pre-wrap; line-height: 1.5;">{{ item.description }}</p>
                 </div>
                 <div class="modal-footer">
-                  <small class="text-muted">Report ID: {{ item.id }} | Created: {{ item.created_at|date:"Y-m-d H:i" }}</small>
+                  <small class="text-slate-400">Report ID: {{ item.id }} | Created: {{ item.created_at|date:"Y-m-d H:i" }}</small>
                 </div>
               </div>
             </div>
@@ -162,7 +303,8 @@
           {% endwith %}
           {% empty %}
           <tr>
-            <td colspan="8" class="text-center empty-state py-4"> <!-- Updated colspan to 8 -->
+            <td colspan="8" class="text-center empty-state py-4">
+              <i class="fas fa-search fa-2x mb-3 d-block"></i>
               📡 NO ACTIVE INTELLIGENCE — STAND BY
             </td>
           </tr>
