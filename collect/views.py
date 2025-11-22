@@ -38,7 +38,7 @@ def dashboard(request):
     medium_severity = threats.filter(severity='medium').count()
     low_severity = threats.filter(severity='low').count()
 
-    paginator = Paginator(threats, 4)
+    paginator = Paginator(threats, 5)
     page_number = request.GET.get('page')
     threats_page = paginator.get_page(page_number)
 

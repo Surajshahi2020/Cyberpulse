@@ -179,21 +179,32 @@
 <!-- 🔍 Live Client-Side Search -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const table = document.querySelector('#threatTable');
+    if (!table) return; // Safety check
+
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.className = 'form-control form-control-sm mb-3';
     searchInput.placeholder = '🔍 Search in current page...';
-    
-    const tableContainer = document.querySelector('#threatTable').closest('.table-responsive');
+
+    const tableContainer = table.closest('.table-responsive') || table.parentNode;
     tableContainer.parentNode.insertBefore(searchInput, tableContainer);
 
     searchInput.addEventListener('input', function() {
-      const term = this.value.toLowerCase();
-      const rows = document.querySelectorAll('#threatTable tbody tr');
+      const term = this.value.toLowerCase().trim();
+      const rows = table.querySelectorAll('tbody tr');
       rows.forEach(row => {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(term) ? '' : 'none';
       });
+    });
+
+    // Optional: Focus search on '/' key (like many apps)
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+        e.preventDefault();
+        searchInput.focus();
+      }
     });
   });
 </script>

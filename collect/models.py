@@ -6,6 +6,10 @@ class ThreatAlert(models.Model):
     # 🔹 Define choices inside the model
     CATEGORY_CHOICES = [
         ('Genz', 'Genz'),
+        ('Chapagau', 'Chapagau'),
+        ('UML', 'UML'),
+        ('Bhrikuti Mandav', 'Bhrikuti Mandav'),
+        ('Samakoshi', 'Samakoshi'),
         ('PM', 'PM'),
         ('People', 'People'),
         ('Protest', 'Protest'),
