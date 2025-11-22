@@ -3,348 +3,318 @@
 
 {% block content %}
 <style>
-  /* Enhanced Color Scheme */
-  .brief-text {
-    cursor: pointer;
-    color: #4dabf7;
-    text-decoration: none;
-    border-bottom: 1px dotted #4dabf7;
-    transition: all 0.2s ease;
-  }
-  .brief-text:hover {
-    color: #74c0fc;
-    background-color: rgba(116, 192, 252, 0.1);
-    border-radius: 3px;
-    padding: 2px 4px;
-    margin: -2px -4px;
+  /* === CLEAN BLACK & WHITE SOC THEME === */
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
   }
 
-  .soc-container {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: #e2e8f0;
-    min-height: 100vh;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 
-      0 4px 6px -1px rgba(0, 0, 0, 0.1), 
-      0 2px 4px -1px rgba(0, 0, 0, 0.06),
-      inset 0 0 0 1px rgba(100, 116, 139, 0.2);
+  /* Header: keep blue accent for branding */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
   }
 
-  .soc-header {
-    border-bottom: 1px solid #334155;
-    padding-bottom: 16px;
-    margin-bottom: 28px;
-    color: #60a5fa;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    position: relative;
-  }
-  
-  .soc-header::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    width: 80px;
-    height: 3px;
-    background: linear-gradient(90deg, #60a5fa, transparent);
-    border-radius: 3px;
-  }
-
+  /* === TABLE: BLACK & WHITE === */
   .table-soc {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid #334155;
-    color: #e2e8f0;
-    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #000000;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
   .table-soc thead th {
-    background: linear-gradient(to bottom, #1e293b, #1e293b);
-    color: #93c5fd;
-    font-weight: 600;
+    background: #f8fafc;
+    color: #1e293b;
+    font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     letter-spacing: 1px;
-    border-bottom: 2px solid #475569;
-    padding: 14px 12px;
+    border-bottom: 2px solid #cbd5e1;
+    padding: 14px 16px;
   }
 
   .table-soc tbody tr {
-    border-bottom: 1px solid #334155;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
     transition: all 0.2s ease;
   }
 
   .table-soc tbody tr:nth-child(even) {
-    background-color: rgba(30, 41, 59, 0.4);
+    background: #f8fafc;
   }
 
   .table-soc tbody tr:hover {
-    background: rgba(56, 86, 138, 0.2) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: #f1f5f9 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
+  /* ✅ Black text on white — maximum readability */
   .table-soc tbody td {
-    padding: 14px 12px;
+    padding: 14px 16px;
     vertical-align: middle;
-    border-color: #334155;
+    color: #000000;
+    font-size: 0.95rem;
+    font-weight: 500;
   }
 
-  /* Enhanced Badges */
-  .badge-pending { 
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: #1e293b; 
+  /* === BADGES: GRAYSCALE WITH STATUS HIGHLIGHT === */
+  .badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
     font-weight: 600;
-    box-shadow: 0 1px 3px rgba(245, 158, 11, 0.3);
+    min-width: 90px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border: 1px solid transparent;
+  }
+
+  .badge-pending { 
+    background: #f59e0b; 
+    color: #1e293b; 
+    font-weight: 700;
   }
   .badge-completed { 
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: #fff; 
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(16, 185, 129, 0.3);
+    background: #10b981; 
+    color: white; 
   }
   .badge-cancelled { 
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: #fff; 
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+    background: #ef4444; 
+    color: white; 
   }
-  
-  .badge {
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
+  .badge.bg-secondary { 
+    background: #94a3b8; 
+    color: white; 
   }
 
-  /* Enhanced Pagination */
+  /* Status accent border (subtle) */
+  tr[data-status="pending"] { border-left: 4px solid #f59e0b; }
+  tr[data-status="completed"] { border-left: 4px solid #10b981; }
+  tr[data-status="cancelled"] { border-left: 4px solid #ef4444; }
+  tr[data-status="unknown"],
+  tr:not([data-status]) { border-left: 4px solid #94a3b8; }
+
+  /* Brief text – clean link */
+  .brief-text {
+    cursor: pointer;
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+  }
+  .brief-text:hover {
+    background: #f1f5f9;
+    color: #4338ca;
+  }
+
+  /* === PAGINATION === */
   .pagination .page-link {
-    background: #1e293b;
-    border: 1px solid #475569;
-    color: #93c5fd;
-    transition: all 0.2s ease;
-    margin: 0 2px;
-    border-radius: 6px;
-  }
-  
-  .pagination .page-link:hover {
-    background: #334155;
-    border-color: #60a5fa;
-    color: #bfdbfe;
-  }
-  
-  .pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    border-color: #3b82f6;
-    color: white;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-  }
-  
-  .pagination .page-item.disabled .page-link {
-    background: #1e293b;
-    color: #64748b;
-    border-color: #475569;
-  }
-
-  .empty-state { 
-    color: #94a3b8; 
-    font-style: italic;
-    padding: 40px 20px;
-  }
-
-  /* Enhanced Modal */
-  .modal-content {
-    background: linear-gradient(135deg, #1e293b 0%, #1e293b 100%);
-    color: #e2e8f0;
-    border: 1px solid #475569;
-    border-radius: 12px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .modal-header { 
-    border-bottom: 1px solid #475569;
-    padding: 20px 24px 16px;
-  }
-  
-  .modal-title {
-    color: #93c5fd;
-    font-weight: 600;
-  }
-  
-  .modal-body {
-    padding: 24px;
-  }
-  
-  .modal-body p {
-    margin-bottom: 12px;
-  }
-  
-  .modal-body hr {
-    border-color: #475569;
-    opacity: 0.7;
-  }
-  
-  .modal-footer { 
-    border-top: 1px solid #475569;
-    padding: 16px 24px 20px;
-  }
-  
-  .btn-close { 
-    filter: invert(1) grayscale(1) brightness(2);
-    opacity: 0.7;
-  }
-  
-  .btn-close:hover {
-    opacity: 1;
-  }
-  
-  /* Additional enhancements */
-  .table-responsive {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #4f46e5;
+    margin: 0 4px;
     border-radius: 8px;
   }
-  
-  .container {
-    max-width: 1400px;
+  .pagination .page-link:hover {
+    background: #f1f5f9;
+    border-color: #4f46e5;
+    color: #4338ca;
   }
-  
-  /* Status-specific row highlights */
-  tr[data-status="pending"] {
-    border-left: 3px solid #f59e0b;
+  .pagination .page-item.active .page-link {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: white;
+    font-weight: 600;
   }
-  
-  tr[data-status="completed"] {
-    border-left: 3px solid #10b981;
+
+  /* === EMPTY STATE === */
+  .empty-state {
+    color: #64748b;
+    font-style: italic;
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 1.1rem;
   }
-  
-  tr[data-status="cancelled"] {
-    border-left: 3px solid #ef4444;
+  .empty-state i {
+    color: #94a3b8;
+  }
+
+  /* === MODAL === */
+  .modal-content {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+  .modal-header, .modal-footer {
+    border-color: #e2e8f0;
+  }
+  .modal-title {
+    color: #1e293b;
+    font-weight: 700;
+  }
+  .modal-body hr {
+    border-color: #e2e8f0;
   }
 </style>
 
-<div class="container soc-container py-4">
-  <h2 class="soc-header">
-    <i class="fas fa-shield-alt me-2"></i>
-    CURRENT INTELLIGENCE FEED
-  </h2>
+<div class="container-fluid">
+  <!-- 🔵 Header (keep blue for visual anchor) -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card border-0 bg-gradient-primary text-white">
+        <div class="card-body py-4">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <h1 class="h3 mb-2">
+                <i class="fas fa-shield-alt me-2"></i>CURRENT INTELLIGENCE FEED
+              </h1>
+              <p class="mb-0 opacity-90">
+                Real-time operational updates from field units
+              </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <span class="badge bg-white text-dark fs-6">
+                <i class="fas fa-database me-1"></i>
+                {{ page_obj.paginator.count }} Active Reports
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  {% if page_obj %}
-    <div class="table-responsive">
-      <table class="table table-soc align-middle">
-        <thead>
-          <tr>
-            <th scope="col">SN</th>
-            <th scope="col">TIMESTAMP</th>
-            <th scope="col">LOCATION</th>
-            <th scope="col">LEADER</th>
-            <th scope="col">Number of People</th>
-            <th scope="col">VEHICLE</th>
-            <th scope="col">STATUS</th>
-            <th scope="col">BRIEF</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in page_obj %}
-            {% with forloop.counter as sn %}
-          <tr data-status="{{ item.status }}">
-            <td>{{ sn }}</td>
-            <td>{{ item.timing }}</td>
-            <td>{{ item.location }}</td>
-            <td>{{ item.leader }}</td>
-            <td>{{ item.number|default:"—" }}</td>
-            <td>{{ item.vehicle|default:"—" }}</td>
-            <td>
-              {% if item.status == 'pending' %}
-                <span class="badge badge-pending px-2 py-1">PENDING</span>
-              {% elif item.status == 'completed' %}
-                <span class="badge badge-completed px-2 py-1">COMPLETED</span>
-              {% elif item.status == 'cancelled' %}
-                <span class="badge badge-cancelled px-2 py-1">CANCELLED</span>
-              {% else %}
-                <span class="badge bg-secondary px-2 py-1">UNKNOWN</span>
-              {% endif %}
-            </td>
-            <td>
-              {% if item.description %}
-                <span class="brief-text" data-bs-toggle="modal" data-bs-target="#descModal{{ item.id }}">
-                  {{ item.description|truncatewords:15 }}
-                </span>
-              {% else %}
-                —
-              {% endif %}
-            </td>
-          </tr>
+  <!-- Intel Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="table-responsive">
+        <table class="table table-soc align-middle">
+          <thead>
+            <tr>
+              <th scope="col">SN</th>
+              <th scope="col">TIMESTAMP</th>
+              <th scope="col">LOCATION</th>
+              <th scope="col">LEADER</th>
+              <th scope="col">People</th>
+              <th scope="col">VEHICLE</th>
+              <th scope="col">STATUS</th>
+              <th scope="col">BRIEF</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in page_obj %}
+            <tr data-status="{{ item.status|default:'unknown' }}">
+              <td>{{ forloop.counter }}</td>
+              <td>{{ item.timing }}</td>
+              <td>{{ item.location }}</td>
+              <td>{{ item.leader }}</td>
+              <td>{{ item.number|default:"—" }}</td>
+              <td>{{ item.vehicle|default:"—" }}</td>
+              <td>
+                {% if item.status == 'pending' %}
+                  <span class="badge badge-pending">PENDING</span>
+                {% elif item.status == 'completed' %}
+                  <span class="badge badge-completed">COMPLETED</span>
+                {% elif item.status == 'cancelled' %}
+                  <span class="badge badge-cancelled">CANCELLED</span>
+                {% else %}
+                  <span class="badge bg-secondary">UNKNOWN</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if item.description %}
+                  <span class="brief-text" data-bs-toggle="modal" data-bs-target="#descModal{{ item.id }}">
+                    {{ item.description|truncatewords:15 }}
+                  </span>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
 
-          <!-- Modal for full description -->
-          <div class="modal fade" id="descModal{{ item.id }}" tabindex="-1" aria-labelledby="descModalLabel{{ item.id }}" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="descModalLabel{{ item.id }}">
-                    <i class="fas fa-file-alt me-2"></i>INTEL REPORT — {{ item.leader }}
-                  </h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <p><strong>Location:</strong> {{ item.location }}</p>
-                  <p><strong>Time:</strong> {{ item.timing }}</p>
-                  <p><strong>Vehicle:</strong> {{ item.vehicle|default:"Not specified" }}</p>
-                  <hr class="my-3">
-                  <h6 class="text-sky-300">Full Description:</h6>
-                  <p style="white-space: pre-wrap; line-height: 1.5;">{{ item.description }}</p>
-                </div>
-                <div class="modal-footer">
-                  <small class="text-slate-400">Report ID: {{ item.id }} | Created: {{ item.created_at|date:"Y-m-d H:i" }}</small>
+            <!-- Modal -->
+            <div class="modal fade" id="descModal{{ item.id }}" tabindex="-1">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">
+                      <i class="fas fa-file-alt me-2"></i>INTEL REPORT — {{ item.leader }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p><strong>Location:</strong> {{ item.location }}</p>
+                    <p><strong>Time:</strong> {{ item.timing }}</p>
+                    <p><strong>Vehicle:</strong> {{ item.vehicle|default:"Not specified" }}</p>
+                    <hr class="my-3">
+                    <h6>Full Description:</h6>
+                    <p style="white-space: pre-wrap; line-height: 1.5;">{{ item.description }}</p>
+                  </div>
+                  <div class="modal-footer">
+                    <small class="text-muted">Report ID: {{ item.id }} | {{ item.created_at|date:"Y-m-d H:i" }}</small>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          {% endwith %}
-          {% empty %}
-          <tr>
-            <td colspan="8" class="text-center empty-state py-4">
-              <i class="fas fa-search fa-2x mb-3 d-block"></i>
-              📡 NO ACTIVE INTELLIGENCE — STAND BY
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center empty-state py-5">
+                <i class="fas fa-satellite-dish fa-2x mb-3 d-block"></i>
+                📡 NO ACTIVE INTELLIGENCE — STAND BY
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
-    <!-- Pagination -->
-    {% if page_obj.has_other_pages %}
-    <nav aria-label="Intel Feed Navigation" class="mt-4">
-      <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page=1">&laquo; FIRST</a>
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+      <nav aria-label="Intel Feed Navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query|urlencode }}{% endif %}">
+                <i class="fas fa-angle-double-left"></i>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}">
+                <i class="fas fa-angle-left"></i>
+              </a>
+            </li>
+          {% endif %}
+          <li class="page-item disabled">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
           </li>
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">PREV</a>
-          </li>
-        {% endif %}
-        <li class="page-item disabled">
-          <span class="page-link">PAGE {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-        </li>
-        {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}">NEXT</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">LAST &raquo;</a>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
-    {% endif %}
-
-  {% else %}
-    <div class="text-center mt-5 empty-state">
-      <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-      <p>NO INTELLIGENCE FEED AVAILABLE</p>
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}">
+                <i class="fas fa-angle-right"></i>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query|urlencode }}{% endif %}">
+                <i class="fas fa-angle-double-right"></i>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %}
     </div>
-  {% endif %}
+  </div>
 </div>
 {% endblock %}

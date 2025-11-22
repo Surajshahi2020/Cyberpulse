@@ -126,3 +126,22 @@ class CurrentInformation(models.Model):
 
     def __str__(self):
         return f"{self.leader} at {self.location} on {self.timing}"
+
+
+class NewsSource(models.Model):
+    name = models.CharField(max_length=200, help_text="Display name of the news source")
+    url = models.URLField(max_length=500, help_text="Full TikTok or official URL")
+    image = models.ImageField(
+        upload_to='threat_alerts/source',
+        blank=True,
+        null=True,
+        help_text="Logo or favicon (optional)"
+    )
+
+    class Meta:
+        verbose_name = "News Source"
+        verbose_name_plural = "News Sources"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name

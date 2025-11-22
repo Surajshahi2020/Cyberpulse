@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from urllib.parse import quote
 from django.db.models import Q  # 🔸 You were using Q but didn't import it!
-from .models import ThreatAlert, CurrentInformation
+from .models import ThreatAlert, CurrentInformation, NewsSource
 from collections import Counter
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -16,8 +16,6 @@ from django.db.models.functions import TruncDate
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 import os
-
-
 
 def dashboard(request):
     user = request.user
@@ -302,7 +300,7 @@ def newsTrending(request):
     )
     
     # Add pagination for critical threats with videos
-    paginator = Paginator(critical_threats_with_videos, 3)
+    paginator = Paginator(critical_threats_with_videos, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
@@ -413,6 +411,32 @@ def newsSpy(request):
         'page_obj': page_obj,
     })
 
+
 def loginPage(request):
     return render(request, 'login.html', {
+    })
+
+
+def newsSource(request):
+    search_query = request.GET.get('search', '').strip()
+    
+    sources = NewsSource.objects.all()
+    
+    if search_query:
+        sources = sources.filter(
+            name__icontains=search_query
+        ) | sources.filter(
+            url__icontains=search_query
+        )
+    
+    sources = sources.order_by('name')
+    
+    # Pagination (12 per page – adjust as needed)
+    paginator = Paginator(sources,12 )
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'newsSource.html', {
+        'sources': page_obj,
+        'search_query': search_query,
     })

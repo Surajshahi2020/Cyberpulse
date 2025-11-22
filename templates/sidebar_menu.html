@@ -14,7 +14,7 @@
     <a class="nav-link d-flex align-items-center text-white py-2 px-3 rounded" 
      href="{% url 'news_feed' %}">
       <i class="fas fa-newspaper nav-icon fa-lg"></i>
-      <span class="sidebar-text ms-3">News Feed</span>
+      <span class="sidebar-text ms-3">Event Feed</span>
     </a>
   </li>
 
@@ -57,6 +57,14 @@
      href="{% url 'news_current' %}">
       <i class="fas fa-chart-line nav-icon fa-lg"></i>
       <span class="sidebar-text ms-3">Current Information</span>
+    </a>
+  </li>
+
+  <li class="nav-item mb-2">
+    <a class="nav-link d-flex align-items-center text-white py-2 px-3 rounded" 
+     href="{% url 'news_source' %}">
+      <i class="fas fa-broadcast-tower nav-icon fa-lg"></i>
+      <span class="sidebar-text ms-3">Event Source</span>
     </a>
   </li>
 

@@ -15,6 +15,7 @@ urlpatterns = [
     path('current_news/', views.newsCurrent, name='news_current'),
     path('spy_news/', views.newsSpy, name='news_spy'),
     path('login/', views.loginPage, name='login_page'),
+    path('source_news/', views.newsSource, name='news_source'),
 ]
 
 # Serve media files during development
