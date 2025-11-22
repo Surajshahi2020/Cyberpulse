@@ -1,5 +1,5 @@
 # collect/views.py
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -16,6 +16,7 @@ from django.db.models.functions import TruncDate
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 import os
+
 
 
 def dashboard(request):
@@ -325,3 +326,89 @@ def newsCurrent(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, 'newsCurrent.html', {'page_obj': page_obj})
+
+
+def newsSpy(request):
+    """Combined view: list + manual form submission with alert context"""
+    if request.method == 'POST':
+        # Extract and clean data
+        timing = request.POST.get('timing', '').strip()
+        location = request.POST.get('location', '').strip()
+        leader = request.POST.get('leader', '').strip()
+        number = request.POST.get('number', '').strip() or None
+        vehicle = request.POST.get('vehicle', '').strip() or None
+        description = request.POST.get('description', '').strip() or None
+        status = request.POST.get('status', 'pending').strip()
+
+        # 🔒 Validation: Required fields
+        if not timing or not location or not leader:
+            current_info_list = CurrentInformation.objects.all().order_by('-created_at')
+            paginator = Paginator(current_info_list, 7)
+            page_obj = paginator.get_page(request.GET.get('page'))
+            return render(request, 'newsSpy.html', {
+                'alert_type': 'error',
+                'alert_message': 'Timestamp, Location, and Field Leader are required.',
+                'form_data': {
+                    'timing': timing,
+                    'location': location,
+                    'leader': leader,
+                    'number': number,
+                    'vehicle': vehicle,
+                    'description': description,
+                    'status': status,
+                },
+                'page_obj': page_obj,
+            })
+
+        # 🔒 Validate status
+        valid_statuses = ['pending', 'completed', 'cancelled']
+        if status not in valid_statuses:
+            status = 'pending'
+
+        try:
+            # ✅ Save to DB
+            CurrentInformation.objects.create(
+                timing=timing,
+                location=location,
+                leader=leader,
+                number=number,
+                vehicle=vehicle,
+                description=description,
+                status=status
+            )
+            # On success: redirect to avoid resubmission + show success
+            current_info_list = CurrentInformation.objects.all().order_by('-created_at')
+            paginator = Paginator(current_info_list, 7)
+            page_obj = paginator.get_page(1)  # Go to page 1 to show new entry
+            return render(request, 'newsSpy.html', {
+                'alert_type': 'success',
+                'alert_message': '✅ Intel report submitted successfully!',
+                'page_obj': page_obj,
+            })
+
+        except Exception as e:
+            current_info_list = CurrentInformation.objects.all().order_by('-created_at')
+            paginator = Paginator(current_info_list, 7)
+            page_obj = paginator.get_page(request.GET.get('page'))
+            return render(request, 'newsSpy.html', {
+                'alert_type': 'error',
+                'alert_message': f'⚠️ Failed to save: {str(e)}',
+                'form_data': {
+                    'timing': timing,
+                    'location': location,
+                    'leader': leader,
+                    'number': number,
+                    'vehicle': vehicle,
+                    'description': description,
+                    'status': status,
+                },
+                'page_obj': page_obj,
+            })
+
+    # GET request
+    current_info_list = CurrentInformation.objects.all().order_by('-created_at')
+    paginator = Paginator(current_info_list, 7)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    return render(request, 'newsSpy.html', {
+        'page_obj': page_obj,
+    })
